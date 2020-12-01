@@ -206,9 +206,10 @@ class _MyHomePageState extends State<MyHomePage> {
 
   capturePictures() async {
     print('capturePictures()');
+    print('cameraCtrl $cameraCtrl');
 
-    if (cameraCtrl.value.isTakingPicture) {
-      // A capture is already pending, do nothing.
+    if (cameraCtrl.value.isTakingPicture ||cameraCtrl.value.hasError) {
+      print('A capture is already pending, do nothing.');
       return null;
     }
 
@@ -216,8 +217,7 @@ class _MyHomePageState extends State<MyHomePage> {
     final Directory extDir = await getApplicationDocumentsDirectory();
     final String dirPath = "${extDir.path}/Pictures/flutter_test";
     await Directory(dirPath).create(recursive: true);
-    final String filePath = "$dirPath/($timestamp).jpg";
-
+    final String filePath = "$dirPath/$timestamp.jpg";
     print('capturePictures() - filePath: "$filePath"');
 
     try {
@@ -257,6 +257,7 @@ class _MyHomePageState extends State<MyHomePage> {
     });
 
     print('classifyImage() - output');
+    print('$output');
     return output;
   }
 
