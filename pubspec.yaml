@@ -33,6 +33,7 @@ dependencies:
   flutter_local_notifications: ^1.4.4+2
   image_picker: ^0.6.7+4
   path_provider: ^1.6.24
+  tesseract_ocr: ^0.3.0
 
 dev_dependencies:
   flutter_test:
@@ -52,6 +53,8 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - assets/dl_cnn/
+    - assets/
+    - assets/tessdata/
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
 

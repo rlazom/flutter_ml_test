@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:tflite/tflite.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:tesseract_ocr/tesseract_ocr.dart';
 
 
 void main() {
@@ -42,11 +43,13 @@ class _MyHomePageState extends State<MyHomePage> {
   List<CameraDescription> cameras;
   CameraController cameraCtrl;
   bool takePhoto;
+  bool ocr;
 
   @override
   void initState() {
     super.initState();
     takePhoto = false;
+    ocr = false;
 
     loadModel();
     initializeCameras();
@@ -245,13 +248,26 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Future<List<dynamic>> classifyImage(File image) async {
     print('classifyImage()');
+    List output = new List();
 
-    var output = await Tflite.runModelOnImage(
-        path: image.path,
-        numResults: 2,
-        threshold: 0.5,
-        imageMean: 127.5,
-        imageStd: 127.5);
+    if(ocr) {
+      print('classifyImage() - OCR');
+//      String str = await TesseractOcr.extractText(image.path, language: "eng");
+      String str = await TesseractOcr.extractText(image.path);
+      print('classifyImage() - OCR - str: "${str.trim()}"');
+      if(str != null) {
+        output.add({'label': '0 ${str.trim()}', 'confidence': 1.0});
+      }
+    } else {
+      print('classifyImage() - Classify Image');
+      output = await Tflite.runModelOnImage(
+          path: image.path,
+          numResults: 2,
+          threshold: 0.5,
+          imageMean: 127.5,
+          imageStd: 127.5);
+    }
+
     setState(() {
       _output = output;
     });
@@ -265,12 +281,14 @@ class _MyHomePageState extends State<MyHomePage> {
     print('getClassifyLabel()');
     print('getClassifyLabel() - result: $result');
 
-    String label = result['label'].toString();
+    String label =  result['label'].toString();
+    label = label.replaceAll('\n', ' ');
+
     double confidence = result['confidence'];
-    String confidenceStr = confidence.toStringAsFixed(2);
+    String confidenceStr = ocr ? '' : ' (${confidence.toStringAsFixed(2)})';
 
     int idx = label.indexOf(' ');
-    return label.substring(idx).trim() + ' ($confidenceStr)';
+    return label.substring(idx).trim() + confidenceStr;
   }
 
   _buildClassifyLabelWdt() {
@@ -286,7 +304,16 @@ class _MyHomePageState extends State<MyHomePage> {
         for(var res in resultList) {
           String label = getClassifyLabel(res);
           widgetsList.add(
-              new Chip(label: new Text(label))
+              Flexible(
+                  child: Container(
+                    padding: const EdgeInsets.all(12.0),
+                    decoration: BoxDecoration(
+                      color: Colors.grey,
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                    child: new Text(label)
+                  )
+              )
           );
         }
       }
@@ -301,6 +328,11 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
+  updateOCR(bool val) {
+    setState(() {
+      ocr = val;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -312,7 +344,7 @@ class _MyHomePageState extends State<MyHomePage> {
             tooltip: 'Import from Gallery',
             icon: Icon(Icons.add_photo_alternate),
             onPressed: pickImage,
-          )
+          ),
         ],
       ),
       body: Center(
@@ -323,6 +355,11 @@ class _MyHomePageState extends State<MyHomePage> {
               mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
+                SwitchListTile(
+                  title: Text('OCR'),
+                  value: ocr,
+                  onChanged: updateOCR,
+                ),
                 _buildThumbnailImg(),
                 _buildClassifyLabelWdt(),
                 _buildCameraPreviewWidget(),
