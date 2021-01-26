@@ -1,9 +1,5 @@
 import 'dart:async';
-import 'dart:io';
-
-import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:test_ml/services/camera_service.dart';
 import 'package:test_ml/services/tensorflow_service.dart';
 import 'package:test_ml/widgets/camera_preview_wdt.dart';
@@ -22,10 +18,6 @@ class _MyHomePageState extends State<MyHomePage> {
   TensorflowService _tensorFlowService = TensorflowService();
   CameraService _cameraService = CameraService();
 
-//  File _image;
-//  var picker = ImagePicker();
-//  List<CameraDescription> cameras;
-//  CameraController cameraCtrl;
   bool _stream;
 
   @override
