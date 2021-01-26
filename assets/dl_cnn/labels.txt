@@ -1,3 +1,8 @@
-0 cara
-1 mano
-2 puno
+0 Atletico Madrid
+1 Real Madrid
+2 Barcelona
+3 Bayern
+4 Juventus
+5 Milan
+6 PSG
+7 United
