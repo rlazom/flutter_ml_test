@@ -29,11 +29,12 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.0
   tflite: ^1.1.1
-  camera: ^0.5.8+2
+  camera: ^0.6.4+5
   flutter_local_notifications: ^1.4.4+2
   image_picker: ^0.6.7+4
   path_provider: ^1.6.24
   tesseract_ocr: ^0.3.0
+  image: ^2.1.19
 
 dev_dependencies:
   flutter_test:
